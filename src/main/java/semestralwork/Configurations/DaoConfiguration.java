@@ -2,6 +2,7 @@ package semestralwork.Configurations;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import semestralwork.Models.CitiesDao;
 import semestralwork.Models.CountriesDao;
 import semestralwork.Models.MeasurementsDao;
 
@@ -10,6 +11,11 @@ public class DaoConfiguration {
     @Bean
     public CountriesDao countriesDao() {
         return new CountriesDao();
+    }
+
+    @Bean
+    public CitiesDao citiesDao() {
+        return new CitiesDao();
     }
 
     @Bean

@@ -7,18 +7,18 @@ public class City {
     private String name;
     private double longitude;
     private double latitude;
-    private Country country;
+    private int country_id;
 
     public City(){
 
     }
 
-    public City(int id, String name, double longitude, double latitude, Country country) {
+    public City(int id, String name, double longitude, double latitude, int country_id) {
         this.id = id;
         this.name = name;
         this.longitude = longitude;
         this.latitude = latitude;
-        this.country = country;
+        this.country_id = country_id;
     }
 
     public int getId() {
@@ -53,24 +53,24 @@ public class City {
         this.latitude = latitude;
     }
 
-    public Country getCountry() {
-        return country;
+    public int getCountry_id() {
+        return country_id;
     }
 
-    public void setCountry(Country country) {
-        this.country = country;
+    public void setCountry_id(int country_id) {
+        this.country_id = country_id;
     }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         City city = (City) o;
-        return id == city.id && Double.compare(longitude, city.longitude) == 0 && Double.compare(latitude, city.latitude) == 0 && Objects.equals(name, city.name) && Objects.equals(country, city.country);
+        return id == city.id && Double.compare(longitude, city.longitude) == 0 && Double.compare(latitude, city.latitude) == 0 && Objects.equals(name, city.name) && Objects.equals(country_id, city.country_id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, longitude, latitude, country);
+        return Objects.hash(id, name, longitude, latitude, country_id);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class City {
                 ", name='" + name + '\'' +
                 ", longitude=" + longitude +
                 ", latitude=" + latitude +
-                ", country=" + country +
+                ", country=" + country_id +
                 '}';
     }
 }

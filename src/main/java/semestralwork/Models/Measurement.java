@@ -14,12 +14,12 @@ public class Measurement {
     private String weather_desc;
     private double wind_speed;
     private int wind_deg;
-    private City city;
+    private int city_id;
 
     public Measurement() {
     }
 
-    public Measurement(int id, LocalDateTime datetime, double temp, int pressure, int humidity, double temp_min, double temp_max, String weather, String weather_desc, double wind_speed, int wind_deg, City city) {
+    public Measurement(int id, LocalDateTime datetime, double temp, int pressure, int humidity, double temp_min, double temp_max, String weather, String weather_desc, double wind_speed, int wind_deg, int city_id) {
         this.id = id;
         this.datetime = datetime;
         this.temp = temp;
@@ -31,7 +31,7 @@ public class Measurement {
         this.weather_desc = weather_desc;
         this.wind_speed = wind_speed;
         this.wind_deg = wind_deg;
-        this.city = city;
+        this.city_id = city_id;
     }
 
     public int getId() {
@@ -122,11 +122,29 @@ public class Measurement {
         this.wind_deg = wind_deg;
     }
 
-    public City getCity() {
-        return city;
+    public int getCity_id() {
+        return city_id;
     }
 
-    public void setCity(City city) {
-        this.city = city;
+    public void setCity_id(int city_id) {
+        this.city_id = city_id;
+    }
+
+    @Override
+    public String toString() {
+        return "Measurement{" +
+                "id=" + id +
+                ", datetime=" + datetime +
+                ", temp=" + temp +
+                ", pressure=" + pressure +
+                ", humidity=" + humidity +
+                ", temp_min=" + temp_min +
+                ", temp_max=" + temp_max +
+                ", weather='" + weather + '\'' +
+                ", weather_desc='" + weather_desc + '\'' +
+                ", wind_speed=" + wind_speed +
+                ", wind_deg=" + wind_deg +
+                ", city_id=" + city_id +
+                '}';
     }
 }

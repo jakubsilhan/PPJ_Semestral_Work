@@ -3,8 +3,7 @@ package semestralwork;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 import semestralwork.Configurations.AppConfiguration;
-import semestralwork.Models.City;
-import semestralwork.Models.MeasurementsDao;
+import semestralwork.Models.*;
 import semestralwork.Services.WeatherService;
 
 
@@ -16,12 +15,26 @@ public class SemestralWorkApplication {
 		System.out.println("SemestralWork Application Started");
 
 		MeasurementsDao measurementsDao = ctx.getBean(MeasurementsDao.class);
+		CountriesDao countriesDao = ctx.getBean(CountriesDao.class);
+		CitiesDao citiesDao = ctx.getBean(CitiesDao.class);
 		WeatherService weatherService = ctx.getBean(WeatherService.class);
 
-		City city = new City();
-		city.setId(3);
-		city.setName("Hamburg");
-		weatherService.updateMeasurements(city);
+		// Countries
+		countriesDao.getCountries().forEach(System.out::println);
+		Country country = countriesDao.getCountry("Germany");
+		System.out.println(country);
+
+
+		// Cities
+		citiesDao.getCities().forEach(System.out::println);
+		citiesDao.getCitiesByCountryId(country.getId()).forEach(System.out::println);
+		City city = citiesDao.getCity("Hamburg");
+		System.out.println(city);
+
+
+		//Measurements
+		measurementsDao.getMeasurements().forEach(System.out::println);
+		measurementsDao.getMeasurementsByCityId(city.getId()).forEach(System.out::println);
 	}
 
 }

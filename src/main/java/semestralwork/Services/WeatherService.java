@@ -76,7 +76,7 @@ public class WeatherService {
                     .addValue("weather_desc", measurement.getWeather_desc())
                     .addValue("wind_speed", measurement.getWind_speed())
                     .addValue("wind_deg", measurement.getWind_deg())
-                    .addValue("city_id", measurement.getCity().getId());
+                    .addValue("city_id", measurement.getCity_id());
 
             batchParams.add(parameters);
         }
@@ -115,7 +115,7 @@ public class WeatherService {
                 String weather = weatherObj.getString("main");
                 String description = weatherObj.getString("description");
 
-                Measurement tempMeasure = new Measurement(index, date, temp, pressure, humidity, temp_min, temp_max, weather, description, windSpeed, windDeg, city);
+                Measurement tempMeasure = new Measurement(index, date, temp, pressure, humidity, temp_min, temp_max, weather, description, windSpeed, windDeg, city.getId());
                 index++;
                 measurements.add(tempMeasure);
             }
