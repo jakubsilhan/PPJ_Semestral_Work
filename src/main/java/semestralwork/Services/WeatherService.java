@@ -11,6 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import semestralwork.Models.City;
 import semestralwork.Models.Measurement;
 
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -33,24 +34,32 @@ public class WeatherService {
     }
 
     //TODO add option to chose time interval
-    public String getHistoricalWeather(String city) {
-        WebClient webClient = WebClient.builder().baseUrl(base_url).build();
-        return webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/history/city")
-                        .queryParam("q", city)
-                        .queryParam("appid", API_KEY)
-                        .build())
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
+    public String getHistoricalWeather(String city, Long from, Long to) {
+
+        try {
+            WebClient webClient = WebClient.builder().baseUrl(base_url).build();
+            return webClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/history/city")
+                            .queryParam("q", city)
+                            .queryParam("start", from)
+                            .queryParam("end", to)
+                            .queryParam("appid", API_KEY)
+                            .build())
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+        } catch (Exception e) {
+            System.out.println(e.getMessage() + city);
+        }
+        return "";
     }
 
     /**
      * Updates weather data for city (replaces old ones)
      * @param city
      */
-    public void updateMeasurements(City city) {
+    public void updateMeasurements(City city, Long from, Long to) {
         // Delete previous saved data
         MapSqlParameterSource delParams = new MapSqlParameterSource()
                 .addValue("city_id", city.getId());
@@ -58,7 +67,7 @@ public class WeatherService {
         jdbc.update(sql, delParams);
 
         // Acquire new data
-        String response = getHistoricalWeather(city.getName());
+        String response = getHistoricalWeather(city.getName(), from, to);
         List<Measurement> measurements = parseResponse(response, city);
 
         // Insert new data
