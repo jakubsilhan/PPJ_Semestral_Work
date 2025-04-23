@@ -1,24 +1,51 @@
 package semestralwork.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import java.util.List;
 import java.util.Objects;
 
+@Entity
+@Table(name="City")
 public class City {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @Column(unique=true)
     private String name;
     private double longitude;
     private double latitude;
-    private int country_id;
+
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "country_id", nullable = false)
+    private Country country;
+
+    @OneToMany(mappedBy = "city")
+    @JsonIgnore
+    private List<Measurement> measurements;
 
     public City(){
 
     }
 
-    public City(int id, String name, double longitude, double latitude, int country_id) {
+    public City(int id, String name, double longitude, double latitude) {
         this.id = id;
         this.name = name;
         this.longitude = longitude;
         this.latitude = latitude;
-        this.country_id = country_id;
+    }
+
+    public City(int id, String name, double longitude, double latitude, Country country) {
+        this.id = id;
+        this.name = name;
+        this.longitude = longitude;
+        this.latitude = latitude;
+        this.country = country;
     }
 
     public int getId() {
@@ -53,24 +80,24 @@ public class City {
         this.latitude = latitude;
     }
 
-    public int getCountry_id() {
-        return country_id;
+    public Country getCountry() {
+        return country;
     }
 
-    public void setCountry_id(int country_id) {
-        this.country_id = country_id;
+    public void setCountry(Country country) {
+        this.country = country;
     }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         City city = (City) o;
-        return id == city.id && Double.compare(longitude, city.longitude) == 0 && Double.compare(latitude, city.latitude) == 0 && Objects.equals(name, city.name) && Objects.equals(country_id, city.country_id);
+        return id == city.id && Double.compare(longitude, city.longitude) == 0 && Double.compare(latitude, city.latitude) == 0 && Objects.equals(name, city.name) && Objects.equals(country, city.country);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, longitude, latitude, country_id);
+        return Objects.hash(id, name, longitude, latitude, country);
     }
 
     @Override
@@ -80,7 +107,7 @@ public class City {
                 ", name='" + name + '\'' +
                 ", longitude=" + longitude +
                 ", latitude=" + latitude +
-                ", country=" + country_id +
+                ", country=" + country.getName() +
                 '}';
     }
 }

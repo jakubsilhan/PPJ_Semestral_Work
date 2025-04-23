@@ -1,8 +1,21 @@
 package semestralwork.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+
+import java.util.List;
+
+@Entity
+@Table(name = "Country")
 public class Country {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
+
+    @OneToMany(mappedBy = "country", fetch = FetchType.EAGER)
+    @JsonIgnore
+    private List<City> cities;
 
     public Country() {
 
@@ -29,11 +42,20 @@ public class Country {
         this.name = name;
     }
 
+    public List<City> getCities() {
+        return cities;
+    }
+
+    public void setCities(List<City> cities) {
+        this.cities = cities;
+    }
+
     @Override
     public String toString() {
         return "Country{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", cities=" + cities +
                 '}';
     }
 }
