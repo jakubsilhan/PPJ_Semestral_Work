@@ -1,8 +1,16 @@
 package semestralwork.Models;
 
+import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "Measurement")
 public class Measurement {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private LocalDateTime datetime;
     private double temp;
@@ -14,12 +22,16 @@ public class Measurement {
     private String weather_desc;
     private double wind_speed;
     private int wind_deg;
-    private int city_id;
+
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "City_id")
+    private City city;
 
     public Measurement() {
     }
 
-    public Measurement(int id, LocalDateTime datetime, double temp, int pressure, int humidity, double temp_min, double temp_max, String weather, String weather_desc, double wind_speed, int wind_deg, int city_id) {
+    public Measurement(int id, LocalDateTime datetime, double temp, int pressure, int humidity, double temp_min, double temp_max, String weather, String weather_desc, double wind_speed, int wind_deg, City city) {
         this.id = id;
         this.datetime = datetime;
         this.temp = temp;
@@ -31,7 +43,7 @@ public class Measurement {
         this.weather_desc = weather_desc;
         this.wind_speed = wind_speed;
         this.wind_deg = wind_deg;
-        this.city_id = city_id;
+        this.city = city;
     }
 
     public int getId() {
@@ -122,12 +134,12 @@ public class Measurement {
         this.wind_deg = wind_deg;
     }
 
-    public int getCity_id() {
-        return city_id;
+    public City getCity() {
+        return city;
     }
 
-    public void setCity_id(int city_id) {
-        this.city_id = city_id;
+    public void setCity(City city) {
+        this.city = city;
     }
 
     @Override
@@ -144,7 +156,7 @@ public class Measurement {
                 ", weather_desc='" + weather_desc + '\'' +
                 ", wind_speed=" + wind_speed +
                 ", wind_deg=" + wind_deg +
-                ", city_id=" + city_id +
+                ", city=" + city +
                 '}';
     }
 }
