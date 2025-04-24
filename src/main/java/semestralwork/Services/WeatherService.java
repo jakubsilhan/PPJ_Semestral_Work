@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import semestralwork.Models.City;
@@ -16,7 +14,6 @@ import semestralwork.Models.Measurement;
 import semestralwork.Repositories.CityRepository;
 import semestralwork.Repositories.MeasurementRepository;
 
-import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -95,7 +92,7 @@ public class WeatherService {
         measurementRepository.saveAll(measurements);
     }
 
-    private List<Measurement> parseResponse(String response, City city) {
+    public List<Measurement> parseResponse(String response, City city) {
         int index = 0;
         List<Measurement> measurements = new ArrayList<>();
         try {
