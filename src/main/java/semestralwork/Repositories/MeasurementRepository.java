@@ -27,8 +27,8 @@ public interface MeasurementRepository extends CrudRepository<Measurement, Integ
             "AVG(m.temp_min), AVG(m.temp_max), AVG(m.wind_speed)) " +
             "FROM Measurement m " +
             "WHERE m.city.id = :City_id " +
-            "GROUP BY FUNCTION('DATE', m.datetime) " +
-            "ORDER BY FUNCTION('DATE', m.datetime) DESC")
+            "GROUP BY CAST(m.datetime AS date) " +
+            "ORDER BY CAST(m.datetime AS date) DESC")
     public List<MeasurementAggregate> findDailyAverage(@Param("City_id") int cityId, Pageable pageable);
 
     @Query("SELECT new semestralwork.DTOs.MeasurementAggregate(" +
@@ -36,8 +36,8 @@ public interface MeasurementRepository extends CrudRepository<Measurement, Integ
             "AVG(m.temp_min), AVG(m.temp_max), AVG(m.wind_speed)) " +
             "FROM Measurement m " +
             "WHERE m.city.id = :City_id " +
-            "GROUP BY FUNCTION('YEARWEEK', m.datetime) " +
-            "ORDER BY FUNCTION('YEARWEEK', m.datetime) DESC")
+            "GROUP BY FUNCTION('YEAR', m.datetime), FUNCTION('WEEK', m.datetime) " +
+            "ORDER BY FUNCTION('YEAR', m.datetime) DESC, FUNCTION('WEEK', m.datetime) DESC")
     public List<MeasurementAggregate> findWeeklyAverage(@Param("City_id") int cityId, Pageable pageable);
 
     // Delete

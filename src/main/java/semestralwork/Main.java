@@ -6,7 +6,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-@EnableJpaRepositories("semestralwork.Repositories")
 public class Main {
 	// TODO Create tests
 
