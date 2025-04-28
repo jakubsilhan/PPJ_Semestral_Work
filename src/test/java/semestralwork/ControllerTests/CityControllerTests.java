@@ -117,32 +117,61 @@ public class CityControllerTests {
     }
 
     @Test
-    public void testSaveCity_Success() throws Exception {
+    public void testCreateCity_Success() throws Exception {
         String json = objectMapper.writeValueAsString(sampleCity);
 
-        mockMvc.perform(post("/api/cities/save")
+        mockMvc.perform(put("/api/cities/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
-                .andExpect(content().string("City saved successfully."));
+                .andExpect(content().string("City created successfully."));
 
-        verify(cityService, times(1)).save(any(City.class));
+        verify(cityService, times(1)).create(any(City.class));
     }
 
     @Test
-    public void testSaveCity_InternalServerError() throws Exception {
-        doThrow(new RuntimeException("Error saving city")).when(cityService).save(any(City.class));
+    public void testCreateCity_InternalServerError() throws Exception {
+        doThrow(new RuntimeException("service error")).when(cityService).create(any(City.class));
 
         String json = objectMapper.writeValueAsString(sampleCity);
 
-        mockMvc.perform(post("/api/cities/save")
+        mockMvc.perform(put("/api/cities/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().string("Error saving city: Error saving city"));
+                .andExpect(content().string("Error creating city: service error"));
 
-        verify(cityService, times(1)).save(any(City.class));
+        verify(cityService, times(1)).create(any(City.class));
     }
+
+    @Test
+    public void testUpdateCity_Success() throws Exception {
+        String json = objectMapper.writeValueAsString(sampleCity);
+
+        mockMvc.perform(post("/api/cities/update")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk())
+                .andExpect(content().string("City updated successfully."));
+
+        verify(cityService, times(1)).update(any(City.class));
+    }
+
+    @Test
+    public void testUpdateCity_InternalServerError() throws Exception {
+        doThrow(new RuntimeException("service error")).when(cityService).update(any(City.class));
+
+        String json = objectMapper.writeValueAsString(sampleCity);
+
+        mockMvc.perform(post("/api/cities/update")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string("Error updating city: service error"));
+
+        verify(cityService, times(1)).update(any(City.class));
+    }
+
 
     @Test
     public void testDeleteCity_Success() throws Exception {

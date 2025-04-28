@@ -47,7 +47,7 @@ public class WeatherServiceTests {
         when(cityRepository.findById(1)).thenReturn(Optional.empty());
 
         try {
-            weatherService.updateMeasurements(testCity, 100L, 200L);
+            weatherService.updateMeasurements(testCity);
             fail("Expected RuntimeException");
         } catch (RuntimeException e) {
             assertEquals("City not found", e.getMessage());
@@ -63,7 +63,7 @@ public class WeatherServiceTests {
         when(measurementRepository.findLatestMeasurement(eq(1), any()))
                 .thenReturn(List.of(measurement));
 
-        weatherService.updateMeasurements(testCity, 100L, 200L);
+        weatherService.updateMeasurements(testCity);
 
         verify(measurementRepository, never()).deleteByCityId(anyInt());
         verify(measurementRepository, never()).saveAll(any());
@@ -107,17 +107,22 @@ public class WeatherServiceTests {
         WeatherService spyService = spy(weatherService);
         doReturn(mockJsonResponse).when(spyService).getHistoricalWeather(eq(testCity), anyLong(), anyLong());
 
-        spyService.updateMeasurements(testCity, 100L, 200L);
+        spyService.updateMeasurements(testCity);
 
         verify(measurementRepository).deleteByCityId(testCity.getId());
         verify(measurementRepository).saveAll(any());
     }
 
+
     @Test
     public void testGetHistoricalWeather_FailureHandled() {
-        String result = weatherService.getHistoricalWeather(testCity, 100L, 200L);
+        City testCity = new City();
+        testCity.setLatitude(0.0);
+        testCity.setLongitude(0.0);
 
-        assertNotNull(result);
+        assertThrows(RuntimeException.class, () -> {
+            weatherService.getHistoricalWeather(testCity, 100L, 200L);
+        });
     }
 
     @Test

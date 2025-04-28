@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -153,32 +154,62 @@ public class MeasurementControllerTests {
     }
 
     @Test
-    public void testSaveMeasurement_Success() throws Exception {
+    public void testCreateMeasurement_Success() throws Exception {
         String json = objectMapper.writeValueAsString(sampleMeasurement);
 
-        mockMvc.perform(post("/api/measurements/save")
+        mockMvc.perform(put("/api/measurements/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Measurement saved successfully."));
+                .andExpect(content().string("Measurement created successfully."));
 
-        verify(measurementService, times(1)).save(any(Measurement.class));
+        verify(measurementService, times(1)).create(any(Measurement.class));
     }
 
     @Test
-    public void testSaveMeasurement_InternalServerError() throws Exception {
-        doThrow(new RuntimeException("Error saving measurement")).when(measurementService).save(any(Measurement.class));
+    public void testCreateMeasurement_InternalServerError() throws Exception {
+        doThrow(new RuntimeException("service error")).when(measurementService).create(any(Measurement.class));
 
         String json = objectMapper.writeValueAsString(sampleMeasurement);
 
-        mockMvc.perform(post("/api/measurements/save")
+        mockMvc.perform(put("/api/measurements/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().string("Error saving measurement: Error saving measurement"));
+                .andExpect(content().string(containsString("Error creating measurement: service error")));
 
-        verify(measurementService, times(1)).save(any(Measurement.class));
+        verify(measurementService, times(1)).create(any(Measurement.class));
     }
+
+    @Test
+    public void testUpdateMeasurement_Success() throws Exception {
+        String json = objectMapper.writeValueAsString(sampleMeasurement);
+
+        mockMvc.perform(post("/api/measurements/update")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Measurement updated successfully."));
+
+        verify(measurementService, times(1)).update(any(Measurement.class));
+    }
+
+    @Test
+    public void testUpdateMeasurement_InternalServerError() throws Exception {
+        doThrow(new RuntimeException("service error")).when(measurementService).update(any(Measurement.class));
+
+        String json = objectMapper.writeValueAsString(sampleMeasurement);
+
+        mockMvc.perform(post("/api/measurements/update")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string(containsString("Error updating measurement: service error")));
+
+        verify(measurementService, times(1)).update(any(Measurement.class));
+    }
+
+
 
     @Test
     public void testDeleteMeasurement_Success() throws Exception {

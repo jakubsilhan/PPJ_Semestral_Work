@@ -38,15 +38,26 @@ public class CountryController {
     }
 
     // Add or update a country
-    @PostMapping("/save")
-    public ResponseEntity<String> saveCountry(@RequestBody Country country) {
+    @PutMapping("/create")
+    public ResponseEntity<String> createCountry(@RequestBody Country country) {
         try {
-            countryService.save(country);
-            return ResponseEntity.ok("Country saved successfully.");
+            countryService.create(country); // Separate method for creation
+            return ResponseEntity.ok("Country created successfully.");
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Error saving country: " + e.getMessage());
+            return ResponseEntity.internalServerError().body("Error creating country: " + e.getMessage());
         }
     }
+
+    @PostMapping("/update")
+    public ResponseEntity<String> updateCountry(@RequestBody Country country) {
+        try {
+            countryService.update(country); // Separate method for updating
+            return ResponseEntity.ok("Country updated successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error updating country: " + e.getMessage());
+        }
+    }
+
 
     // Delete a country
     @DeleteMapping("/delete/{countryName}")

@@ -113,12 +113,59 @@ public class CityServiceTests {
     }
 
     @Test
-    public void testSave() {
-        City city = new City(1, "City 1", 12.34,56.78);
-        cityService.save(city);
+    public void testCreate_Successful() {
+        City city = new City(1, "City 1", 12.34, 56.78);
+        when(cityRepository.existsById(city.getId())).thenReturn(false);
+
+        cityService.create(city);
 
         verify(cityRepository).save(city);
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreate_CityAlreadyExists() {
+        City city = new City(1, "City 1", 12.34, 56.78);
+        when(cityRepository.existsById(city.getId())).thenReturn(true);
+
+        cityService.create(city);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreate_SaveThrowsException() {
+        City city = new City(1, "City 1", 12.34, 56.78);
+        when(cityRepository.existsById(city.getId())).thenReturn(false);
+        when(cityRepository.save(city)).thenThrow(new RuntimeException("DB error"));
+
+        cityService.create(city);
+    }
+
+    @Test
+    public void testUpdate_Successful() {
+        City city = new City(1, "City 1", 12.34, 56.78);
+        when(cityRepository.existsById(city.getId())).thenReturn(true);
+
+        cityService.update(city);
+
+        verify(cityRepository).save(city);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testUpdate_CityDoesNotExist() {
+        City city = new City(1, "City 1", 12.34, 56.78);
+        when(cityRepository.existsById(city.getId())).thenReturn(false);
+
+        cityService.update(city);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testUpdate_SaveThrowsException() {
+        City city = new City(1, "City 1", 12.34, 56.78);
+        when(cityRepository.existsById(city.getId())).thenReturn(true);
+        when(cityRepository.save(city)).thenThrow(new RuntimeException("DB error"));
+
+        cityService.update(city);
+    }
+
 
     @Test
     public void testDelete() {

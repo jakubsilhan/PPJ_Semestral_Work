@@ -3,10 +3,8 @@ package semestralwork.Controllers;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import semestralwork.DTOs.MeasurementAggregate;
-import semestralwork.Models.City;
 import semestralwork.Models.Measurement;
 import semestralwork.Services.MeasurementService;
-import semestralwork.Services.WeatherService;
 
 import java.util.List;
 
@@ -15,11 +13,9 @@ import java.util.List;
 public class MeasurementController {
 
     private final MeasurementService measurementService;
-    private final WeatherService weatherService;
 
-    public MeasurementController(MeasurementService measurementService, WeatherService weatherService) {
+    public MeasurementController(MeasurementService measurementService) {
         this.measurementService = measurementService;
-        this.weatherService = weatherService;
     }
 
     // Retrieve all cities
@@ -38,30 +34,62 @@ public class MeasurementController {
     // Retrieve a city
     @GetMapping("/latest/{cityName}")
     public ResponseEntity<Measurement> getLatestMeasurement(@PathVariable String cityName){
-        Measurement measurement = measurementService.getLatestMeasurement(cityName);
-        return measurement == null ? ResponseEntity.noContent().build() : ResponseEntity.ok(measurement);
+        try {
+            Measurement measurement = measurementService.getLatestMeasurement(cityName);
+            return measurement == null ? ResponseEntity.noContent().build() : ResponseEntity.ok(measurement);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @GetMapping("/average/daily/{cityName}")
     public ResponseEntity<MeasurementAggregate> getDailyAverage(@PathVariable String cityName){
-        MeasurementAggregate mAggregate = measurementService.getDailyAverage(cityName);
-        return mAggregate == null ? ResponseEntity.noContent().build() : ResponseEntity.ok(mAggregate);
+        try {
+            MeasurementAggregate mAggregate = measurementService.getDailyAverage(cityName);
+            return mAggregate == null ? ResponseEntity.noContent().build() : ResponseEntity.ok(mAggregate);
+        }catch (Exception e){
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @GetMapping("/average/weekly/{cityName}")
     public ResponseEntity<MeasurementAggregate> getWeeklyAverage(@PathVariable String cityName){
-        MeasurementAggregate mAggregate = measurementService.getWeeklyAverage(cityName);
-        return mAggregate == null ? ResponseEntity.noContent().build() : ResponseEntity.ok(mAggregate);
+        try {
+            MeasurementAggregate mAggregate = measurementService.getWeeklyAverage(cityName);
+            return mAggregate == null ? ResponseEntity.noContent().build() : ResponseEntity.ok(mAggregate);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping("/average/biweekly/{cityName}")
+    public ResponseEntity<MeasurementAggregate> getBiWeeklyAverage(@PathVariable String cityName){
+        try {
+            MeasurementAggregate mAggregate = measurementService.getBiWeeklyAverage(cityName);
+            return mAggregate == null ? ResponseEntity.noContent().build() : ResponseEntity.ok(mAggregate);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     // Add or update a city
-    @PostMapping("/save")
-    public ResponseEntity<String> saveMeasurement(@RequestBody Measurement measurement) {
+    @PutMapping("/create")
+    public ResponseEntity<String> createMeasurement(@RequestBody Measurement measurement) {
         try {
-            measurementService.save(measurement);
-            return ResponseEntity.ok("Measurement saved successfully.");
+            measurementService.create(measurement);
+            return ResponseEntity.ok("Measurement created successfully.");
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Error saving measurement: " + e.getMessage());
+            return ResponseEntity.internalServerError().body("Error creating measurement: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<String> updateMeasurement(@RequestBody Measurement measurement) {
+        try {
+            measurementService.update(measurement);
+            return ResponseEntity.ok("Measurement updated successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error updating measurement: " + e.getMessage());
         }
     }
 
