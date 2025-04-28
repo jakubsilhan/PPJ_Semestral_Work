@@ -91,11 +91,57 @@ public class CountryServiceTests {
     }
 
     @Test
-    public void testSave() {
+    public void testCreate_Successful() {
         Country newCountry = new Country(1, "Country 1");
-        countryService.save(newCountry);
+        when(countryRepository.existsById(newCountry.getId())).thenReturn(false);
+
+        countryService.create(newCountry);
 
         verify(countryRepository).save(newCountry);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreate_CountryAlreadyExists() {
+        Country newCountry = new Country(1, "Country 1");
+        when(countryRepository.existsById(newCountry.getId())).thenReturn(true);
+
+        countryService.create(newCountry);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreate_SaveThrowsException() {
+        Country newCountry = new Country(1, "Country 1");
+        when(countryRepository.existsById(newCountry.getId())).thenReturn(false);
+        when(countryRepository.save(newCountry)).thenThrow(new RuntimeException("DB error"));
+
+        countryService.create(newCountry);
+    }
+
+    @Test
+    public void testUpdate_Successful() {
+        Country existingCountry = new Country(1, "Country 1");
+        when(countryRepository.existsById(existingCountry.getId())).thenReturn(true);
+
+        countryService.update(existingCountry);
+
+        verify(countryRepository).save(existingCountry);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testUpdate_CountryDoesNotExist() {
+        Country nonExistingCountry = new Country(1, "Country 1");
+        when(countryRepository.existsById(nonExistingCountry.getId())).thenReturn(false);
+
+        countryService.update(nonExistingCountry);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testUpdate_SaveThrowsException() {
+        Country existingCountry = new Country(1, "Country 1");
+        when(countryRepository.existsById(existingCountry.getId())).thenReturn(true);
+        when(countryRepository.save(existingCountry)).thenThrow(new RuntimeException("DB error"));
+
+        countryService.update(existingCountry);
     }
 
     @Test

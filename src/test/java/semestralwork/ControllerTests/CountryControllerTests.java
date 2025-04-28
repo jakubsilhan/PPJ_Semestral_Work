@@ -103,29 +103,55 @@ public class CountryControllerTests {
     }
 
     @Test
-    public void testSaveCountry_Success() throws Exception {
+    public void testCreateCountry_Success() throws Exception {
         String json = objectMapper.writeValueAsString(sampleCountry);
 
-        mockMvc.perform(post("/api/countries/save")
+        mockMvc.perform(put("/api/countries/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Country saved successfully."));
+                .andExpect(content().string("Country created successfully."));
 
-        verify(countryService).save(any(Country.class));
+        verify(countryService).create(any(Country.class));
     }
 
     @Test
-    public void testSaveCountry_Failure() throws Exception {
-        doThrow(new RuntimeException("Database error")).when(countryService).save(any(Country.class));
+    public void testCreateCountry_Failure() throws Exception {
+        doThrow(new RuntimeException("service error")).when(countryService).create(any(Country.class));
         String json = objectMapper.writeValueAsString(sampleCountry);
 
-        mockMvc.perform(post("/api/countries/save")
+        mockMvc.perform(put("/api/countries/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().string(containsString("Error saving country")));
+                .andExpect(content().string(containsString("service error")));
     }
+
+    @Test
+    public void testUpdateCountry_Success() throws Exception {
+        String json = objectMapper.writeValueAsString(sampleCountry);
+
+        mockMvc.perform(post("/api/countries/update")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Country updated successfully."));
+
+        verify(countryService).update(any(Country.class));
+    }
+
+    @Test
+    public void testUpdateCountry_Failure() throws Exception {
+        doThrow(new RuntimeException("service error")).when(countryService).update(any(Country.class));
+        String json = objectMapper.writeValueAsString(sampleCountry);
+
+        mockMvc.perform(post("/api/countries/update")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string(containsString("service error")));
+    }
+
 
     @Test
     public void testDeleteCountry_Success() throws Exception {

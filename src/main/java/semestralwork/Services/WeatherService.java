@@ -3,6 +3,8 @@ package semestralwork.Services;
 import jakarta.transaction.Transactional;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -14,10 +16,7 @@ import semestralwork.Models.Measurement;
 import semestralwork.Repositories.CityRepository;
 import semestralwork.Repositories.MeasurementRepository;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +33,8 @@ public class WeatherService {
     private String base_url;
     @Autowired
     private CityRepository cityRepository;
+
+    private final Logger logger = LoggerFactory.getLogger(WeatherService.class);
 
     public WeatherService() {
     }
@@ -56,19 +57,17 @@ public class WeatherService {
                     .bodyToMono(String.class)
                     .block();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            logger.error(e.getMessage());
+            throw new RuntimeException("Fetching weather data failed");
         }
-        return "";
     }
 
-    /**
-     * Updates weather data for city (replaces old ones)
-     */
     @Transactional
-    public void updateMeasurements(City city, Long from, Long to) {
+    public void updateMeasurements(City city) {
 
         city = cityRepository.findById(city.getId()).orElse(null);
         if(city == null) {
+            logger.warn("City not found");
             throw new RuntimeException("City not found");
         }
 
@@ -79,14 +78,22 @@ public class WeatherService {
                 return;
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            logger.warn("Failed to fetch latest measurement from database: {}", e.getMessage());
         }
         // Delete previous saved data
         measurementRepository.deleteByCityId(city.getId());
 
+        // Set times
+        Long end = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+        Long middle = LocalDateTime.now().minusDays(7).toEpochSecond(ZoneOffset.UTC);
+        Long start = LocalDateTime.now().minusDays(14).toEpochSecond(ZoneOffset.UTC);
+
         // Acquire new data
-        String response = getHistoricalWeather(city, from, to);
-        List<Measurement> measurements = parseResponse(response, city);
+        String response;
+        response = getHistoricalWeather(city, start, middle); // First week
+        List<Measurement> measurements = new ArrayList<>(parseResponse(response, city));
+        response = getHistoricalWeather(city, middle, end); // Second week
+        measurements.addAll(parseResponse(response, city));
 
         // Save data
         measurementRepository.saveAll(measurements);
@@ -127,7 +134,8 @@ public class WeatherService {
                 measurements.add(tempMeasure);
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            logger.error("Parsing weather response error: {}", e.getMessage());
+            throw new RuntimeException("Parsing weather response failed");
         }
         return measurements;
     }

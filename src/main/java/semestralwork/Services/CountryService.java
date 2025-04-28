@@ -1,5 +1,7 @@
 package semestralwork.Services;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import semestralwork.Models.Country;
@@ -15,6 +17,8 @@ public class CountryService {
     @Autowired
     CountryRepository countryRepository;
 
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+
     // Retrieve
     public List<Country> getCountries() {
         return StreamSupport.stream(countryRepository.findAll().spliterator(), false).collect(Collectors.toList());
@@ -29,9 +33,30 @@ public class CountryService {
     }
 
     // Insert/Update
-    public void save(Country country) {
-        countryRepository.save(country);
+    public void create(Country country) {
+        if (countryRepository.existsById(country.getId())) {
+            throw new IllegalArgumentException("Country with this ID already exists.");
+        }
+        try {
+            countryRepository.save(country);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new IllegalArgumentException("Incorrect input data");
+        }
     }
+
+    public void update(Country country) {
+        if (!countryRepository.existsById(country.getId())) {
+            throw new IllegalArgumentException("Country does not exist, cannot update.");
+        }
+        try {
+            countryRepository.save(country);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new IllegalArgumentException("Incorrect input data");
+        }
+    }
+
 
     // Delete
     public void delete(String countryName) {

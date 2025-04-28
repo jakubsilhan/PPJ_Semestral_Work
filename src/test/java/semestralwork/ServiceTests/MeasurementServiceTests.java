@@ -93,7 +93,7 @@ public class MeasurementServiceTests {
 
         assertNotNull(result);
         assertEquals(mockMeasurements.get(0), result);
-        verify(weatherService).updateMeasurements(eq(testCity), anyLong(), anyLong());
+        verify(weatherService).updateMeasurements(eq(testCity));
     }
 
     @Test
@@ -115,7 +115,7 @@ public class MeasurementServiceTests {
 
         assertNotNull(result);
         assertEquals(mockAggregate, result);
-        verify(weatherService).updateMeasurements(eq(testCity), anyLong(), anyLong());
+        verify(weatherService).updateMeasurements(eq(testCity));
     }
 
     @Test
@@ -137,7 +137,7 @@ public class MeasurementServiceTests {
 
         assertNotNull(result);
         assertEquals(mockAggregate, result);
-        verify(weatherService).updateMeasurements(eq(testCity), anyLong(), anyLong());
+        verify(weatherService).updateMeasurements(eq(testCity));
     }
 
     @Test
@@ -150,11 +150,57 @@ public class MeasurementServiceTests {
     }
 
     @Test
-    public void testSave() {
-        Measurement measurement = new Measurement();
-        measurementService.save(measurement);
+    public void testCreate_Successful() {
+        Measurement newMeasurement = new Measurement();
+        when(measurementRepository.existsById(newMeasurement.getId())).thenReturn(false);
 
-        verify(measurementRepository).save(measurement);
+        measurementService.create(newMeasurement);
+
+        verify(measurementRepository).save(newMeasurement);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreate_MeasurementAlreadyExists() {
+        Measurement newMeasurement = new Measurement();
+        when(measurementRepository.existsById(newMeasurement.getId())).thenReturn(true);
+
+        measurementService.create(newMeasurement);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreate_SaveThrowsException() {
+        Measurement newMeasurement = new Measurement();
+        when(measurementRepository.existsById(newMeasurement.getId())).thenReturn(false);
+        when(measurementRepository.save(newMeasurement)).thenThrow(new RuntimeException("DB error"));
+
+        measurementService.create(newMeasurement);
+    }
+
+    @Test
+    public void testUpdate_Successful() {
+        Measurement existingMeasurement = new Measurement();
+        when(measurementRepository.existsById(existingMeasurement.getId())).thenReturn(true);
+
+        measurementService.update(existingMeasurement);
+
+        verify(measurementRepository).save(existingMeasurement);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testUpdate_MeasurementDoesNotExist() {
+        Measurement nonExistingMeasurement = new Measurement();
+        when(measurementRepository.existsById(nonExistingMeasurement.getId())).thenReturn(false);
+
+        measurementService.update(nonExistingMeasurement);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testUpdate_SaveThrowsException() {
+        Measurement existingMeasurement = new Measurement();
+        when(measurementRepository.existsById(existingMeasurement.getId())).thenReturn(true);
+        when(measurementRepository.save(existingMeasurement)).thenThrow(new RuntimeException("DB error"));
+
+        measurementService.update(existingMeasurement);
     }
 
     @Test

@@ -44,13 +44,23 @@ public class CityController {
     }
 
     // Add or update a city
-    @PostMapping("/save")
-    public ResponseEntity<String> saveCity(@RequestBody City city) {
+    @PutMapping("/create")
+    public ResponseEntity<String> createCity(@RequestBody City city) {
         try {
-            cityService.save(city);
-            return ResponseEntity.ok("City saved successfully.");
+            cityService.create(city);
+            return ResponseEntity.ok("City created successfully.");
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Error saving city: " + e.getMessage());
+            return ResponseEntity.internalServerError().body("Error creating city: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<String> updateCity(@RequestBody City city) {
+        try {
+            cityService.update(city);
+            return ResponseEntity.ok("City updated successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error updating city: " + e.getMessage());
         }
     }
 

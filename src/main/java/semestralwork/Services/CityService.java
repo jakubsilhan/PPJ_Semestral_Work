@@ -1,5 +1,7 @@
 package semestralwork.Services;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import semestralwork.Models.City;
@@ -20,6 +22,8 @@ public class CityService {
 
     @Autowired
     CountryRepository countryRepository;
+
+    private final Logger log = LoggerFactory.getLogger(CityService.class);
 
     // Retrieve
     public List<City> getCities() {
@@ -43,8 +47,28 @@ public class CityService {
     }
 
     // Insert/Update
-    public void save(City city) {
-        cityRepository.save(city);
+    public void create(City city) {
+        if (cityRepository.existsById(city.getId())) {
+            throw new IllegalArgumentException("City with this ID already exists.");
+        }
+        try {
+            cityRepository.save(city);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new IllegalArgumentException("Incorrect input data");
+        }
+    }
+
+    public void update(City city) {
+        if (!cityRepository.existsById(city.getId())) {
+            throw new IllegalArgumentException("City does not exist, cannot update.");
+        }
+        try {
+            cityRepository.save(city);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new IllegalArgumentException("Incorrect input data");
+        }
     }
 
     // Delete
