@@ -36,6 +36,7 @@ build/
 .vscode/
 
 /db/
-.env/DatabaseDevel/
+.env
+/DatabaseDevel/
 /log.out
 /log.txt
